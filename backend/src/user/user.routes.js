@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { createUser, login, sendEmail, forgotPassword, verifyToken, changePassword } from "./user.controller.js";
+import { createUser, login, sendEmail, forgotPassword, verifyToken, changePassword, logout } from "./user.controller.js";
 import { AdminUserGuard, verifyTokenGuard } from "../middleware/guard.middleware.js";
 
 const userRouter = Router();
@@ -11,6 +11,9 @@ userRouter.post("/signup",createUser);
 // @POST /api/user/login
 userRouter.post("/login",login);
 
+// @GET /api/user/logout
+userRouter.get("/logout",logout);
+
 // @POST /api/user/login
 userRouter.post("/send-mail",sendEmail);
 
@@ -19,7 +22,7 @@ userRouter.post("/forgot-password",forgotPassword);
 
 // @GET /api/user/session
 userRouter.get("/session",AdminUserGuard,(req,res)=>{
-    return res.json({message:"success"});
+    return res.json(req.user);
 });
 
 // @POST /api/user/verify-token

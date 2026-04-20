@@ -1,9 +1,12 @@
 import { AppstoreAddOutlined, BarChartOutlined, LogoutOutlined, MenuOutlined } from "@ant-design/icons";
 import { Button, Image, Layout, Menu } from "antd";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useSWR from "swr";
 import fetcher from "../../../utils/fetcher";
+import Loader from "../../Shared/Loader";
+import { toast } from 'react-toastify';
+import http from "../../../utils/http";
 
 const {Sider, Header, Content, Footer} = Layout;
 
@@ -23,19 +26,14 @@ const items = [
 const Userlayout = () => {
 
     const navigate = useNavigate();
+    const {pathname} = useLocation();
 
     const [open,setOpen] = useState(false);
+    const [loading,setLoading] = useState(false);
 
     const handleNavigate = (menu) => {
         navigate(menu.key);
     }
-
-    const {data:session,error,isLoading} = useSWR(
-        "/api/user/session",
-        fetcher
-    )
-
-    console.log(session,error,isLoading);
 
     const siderStyle = {
         overflow: 'auto',
@@ -58,6 +56,19 @@ const Userlayout = () => {
         padding: 0,
     }
 
+    // logout
+    const logout = async () => {
+        try{
+            setLoading(true);
+            await http.get("/api/user/logout");
+            navigate("/");
+            setLoading(false);
+        }catch(err){
+            setLoading(false);
+            toast.error(err.response ? err.response.data.message : err.message)
+        }
+    }
+
     return (
         <Layout className ="!min-h-screen">
             <Sider style={siderStyle} collapsible collapsed={open}>
@@ -71,7 +82,7 @@ const Userlayout = () => {
                     />
                 </div>
                 <Menu
-                defaultSelectedKeys={['/app/user/dashboard']}
+                defaultSelectedKeys={[pathname]}
                 theme="dark"
                 items={items}
                 onClick={handleNavigate}
@@ -86,6 +97,8 @@ const Userlayout = () => {
                     />
                     <Button
                     icon={<LogoutOutlined />}
+                    onClick={logout}
+                    loading={loading}
                     />
                 </Header>
                 <Content>

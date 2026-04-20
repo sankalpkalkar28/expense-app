@@ -24,7 +24,7 @@ const Login = () => {
             if(role === "admin") 
                 return toast.success("Admin try to login");
             if(role === "user")
-                return navigate("/app/user");
+                return navigate("/app/user/dashboard");
         } catch (err) {
             toast.error(err.response ? err.response.data.message : err.message);
         } finally {

@@ -117,12 +117,14 @@ const invalid = async (res) => {
 
 export const AdminUserGuard = async (req,res,next) => {
     const {authToken} = req.cookies;
-    console.log(authToken);
     if(!authToken)
-         return invalid(res);
+        return invalid(res);
 
     const payload = jwt.verify(authToken, process.env.AUTH_SECRET);
-    console.log(payload);
+    if(payload.role !== "user" && payload.role !== "admin")
+        return invalid(res);
+
+    req.user = payload;
     next();
 }
 

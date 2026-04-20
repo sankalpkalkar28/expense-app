@@ -81,8 +81,8 @@ const createToken = async (user) =>{
         role : user.role
     }
 
-    // const token = await jwt.sign(payload,process.env.AUTH_SECRET,{expiresIn:"1d"});
-    const token = await jwt.sign({id:user._id},process.env.FORGOT_TOKEN_SECRET,{expiresIn:"1d"})
+    const token = await jwt.sign(payload, process.env.AUTH_SECRET,{expiresIn:"1d"});
+    // const token = await jwt.sign({id:user._id},process.env.FORGOT_TOKEN_SECRET,{expiresIn:"1d"})
     return token;
 }
 
@@ -137,6 +137,26 @@ export const login = async (req, res) => {
 //         res.status(500).json({message : err.message});
 //     }
 // }
+
+export const logout = async (req, res) => {
+    try{
+        res.cookie('authToken', null, {
+            httpOnly : true,
+            secure : process.env.ENVIRONMENT !== "DEV",
+            sameSite : process.env.ENVIRONMENT === "DEV" ? "lax" : "none",
+            path : "/",
+            domain : undefined,
+            maxAge : 0, 
+        })
+        res.status(200).json({
+            message: "Logout Success"
+        });
+    }catch(err){
+        res.status(401).json({
+            message : err.message || "Logout Failed"
+        });
+    }
+}
 
 export const forgotPassword = async (req, res) => {
     try{
