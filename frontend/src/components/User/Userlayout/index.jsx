@@ -1,5 +1,5 @@
-import { AppstoreAddOutlined, BarChartOutlined, LogoutOutlined, MenuOutlined } from "@ant-design/icons";
-import { Button, Image, Layout, Menu } from "antd";
+import { AppstoreAddOutlined, BarChartOutlined, DollarOutlined, LogoutOutlined, MenuOutlined } from "@ant-design/icons";
+import { Button, Image, Layout, Menu, theme } from "antd";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useSWR from "swr";
@@ -20,6 +20,11 @@ const items = [
         key : "/app/user/report",
         label : "Reports",
         icon : <BarChartOutlined />
+    },
+    {
+        key : "/app/user/transactions",
+        label : "Transactions",
+        icon : <DollarOutlined />
     },
 ]
 
@@ -69,6 +74,10 @@ const Userlayout = () => {
         }
     }
 
+    const {
+        token: { colorBgContainer, borderRadiusLG }
+    } = theme.useToken();
+
     return (
         <Layout className ="!min-h-screen">
             <Sider style={siderStyle} collapsible collapsed={open}>
@@ -101,7 +110,15 @@ const Userlayout = () => {
                     loading={loading}
                     />
                 </Header>
-                <Content>
+                <Content
+                    style={{
+                        margin: '4px 8px',
+                        padding: 4,
+                        minHeight: 280,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusLG,
+                    }}
+                >
                     <Outlet />
                 </Content>
             </Layout>

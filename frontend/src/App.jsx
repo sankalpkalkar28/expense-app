@@ -12,6 +12,7 @@ const ForgotPassword = lazy (() => import("./components/Home/ForgotPassword"));
 const Homepage = lazy (() => import("./components/Home"));
 const Dashboard = lazy(() => import("./components/User/Dashboard"));
 const Report = lazy(() => import("./components/User/Report"));
+const Transactions = lazy(() => import('./components/User/Transactions'));
 
 
 
@@ -34,6 +35,7 @@ const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="report" element={<Report />} />
+          <Route path="transactions" element={<Transactions />} />
         </Route>
         <Route path="/*" element={<PageNotFound />} />
       </Routes>
