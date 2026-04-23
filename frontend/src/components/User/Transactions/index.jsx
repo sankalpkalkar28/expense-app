@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Card, Table, Popconfirm, Form, Select, Modal } from "antd";
 import { toast } from "react-toastify";
+import http from "../../../utils/http";
+import useSWR, { mutate } from "swr";
+import fetcher from "../../../utils/fetcher";
 
 const Transactions = () => {
 
     const [transactionForm] = Form.useForm();
     const [edit, setEdit] = useState(null);
     const [modal, setModal] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);    
 
     const columns = [
         {
@@ -56,7 +59,7 @@ const Transactions = () => {
                         title="Are you sure ?"
                         description="Once you update, You can also re-update !"
                         onCancel={() => toast.info("No Changes occur !")}
-                        // onConfirm={() => onEditTranstion(obj)}
+                        onConfirm={() => onEditTranstion(obj)}
                     >
                         <Button
                             type="text"
@@ -68,7 +71,7 @@ const Transactions = () => {
                         title="Are you sure ?"
                         description="Once you deleted, You can also re-store !"
                         onCancel={() => toast.info("Your data is safe !")}
-                        // onConfirm={() => onEditTranstion(obj)}
+                        onConfirm={() => onDelete(obj._id)}
                     >
                         <Button
                             type="text"
@@ -81,7 +84,60 @@ const Transactions = () => {
         },
     ];
 
-    const dataSource = [{},{}];
+    const {data:transactions,error,isLoading} = useSWR(
+        "/api/transaction/get",
+        fetcher
+    );
+
+    const onFinish = async (values) => {
+        try{
+            setLoading(true);
+            await http.post("/api/transaction/create",values);
+            toast.success("Transaction created successfully !");
+            mutate("/api/transaction/get");
+            setModal(false);
+            transactionForm.resetFields();
+        }catch(err){
+            toast.error(err?.response?.data?.message || err.message);
+        }finally{
+            setLoading(false);
+        }
+    }
+
+    const onUpdate = async (values) => {
+        try{
+            setLoading(true);
+            await http.put(`/api/transaction/update/${edit._id}`,values);
+            toast.success("Transaction created successfully !");
+            mutate("/api/transaction/get");
+            setModal(false);
+            setEdit(null);
+            transactionForm.resetFields();
+        }catch(err){
+            toast.error(err?.response?.data?.message || err.message);
+        }finally{
+            setLoading(false);
+        }
+    }
+
+    const onDelete = async (id) => {
+        try{
+            setLoading(true);
+            await http.delete(`/api/transaction/delete/${id}`);
+            toast.success("Transaction deleted successfully !");
+            mutate("/api/transaction/get");
+        }catch(err){
+            toast.error(err?.response?.data?.message || err.message);
+        }finally{
+            setLoading(false);
+        }
+    }
+
+    const onEditTranstion = (obj) => {
+        setEdit(obj);
+        transactionForm.setFieldsValue(obj);
+        setModal(true);
+    }
 
     return (
         <div>
@@ -107,21 +163,26 @@ const Transactions = () => {
                 >
                     <Table 
                         columns={columns}
-                        dataSource={dataSource}
+                        dataSource={transactions}
                         scroll={{ x: "max-content" }}
-                        rowKey="id"
+                        loading={isLoading}
                     />
                 </Card>
             </div>
             <Modal
                 open={modal}
-                onCancel={()=> setModal(false)}
+                onCancel={()=> {
+                    setModal(false)
+                    setEdit(null)
+                    transactionForm.resetFields()
+                }}
                 title="Add new transaction"
                 footer={null}
             >
                 <Form 
                     layout="vertical"
                     form={transactionForm}
+                    onFinish={edit ? onUpdate : onFinish}
                 >
                     <div className="grid md:grid-cols-2 gap-x-3">
                         <Form.Item
@@ -177,9 +238,9 @@ const Transactions = () => {
                             loading={loading}
                             type="primary"
                             htmlType="submit"
-                            className="!font-semibold !text-white !bg-blue-500"
+                            className={`!font-semibold !text-white ${edit ? "!bg-red-500" : "!bg-blue-500"}`}
                         >
-                            Submit
+                            {edit ? "Updata" : "Submit"}
                         </Button>
                     </Form.Item>
                 </Form>
