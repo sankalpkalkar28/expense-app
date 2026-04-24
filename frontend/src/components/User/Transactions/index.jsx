@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import http from "../../../utils/http";
 import useSWR, { mutate } from "swr";
 import fetcher from "../../../utils/fetcher";
+import { formatDate } from "../../../utils/date";
 
 const Transactions = () => {
 
@@ -48,6 +49,7 @@ const Transactions = () => {
             title: "Date",
             dataIndex: "createdAt",
             key: "createdAt",
+            render : (date) => formatDate(date)
         },
         {
             title: "Action",

@@ -22,7 +22,7 @@ const Signup = () => {
     const onFinish = async (values) => {
         try {
             setLoading(true);
-            const { data } = await axios.post("/api/user/send-mail", values);
+            const { data } = await http.post("/api/user/send-mail", values);
             setOtp(data.otp);
             setFormData(values);
         } catch (err) {
