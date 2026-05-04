@@ -22,7 +22,7 @@ const Login = () => {
             const { data } = await http.post("/api/user/login", values);
             const {role} = data;
             if(role === "admin") 
-                return toast.success("Admin try to login");
+                return navigate("/app/admin/dashboard");
             if(role === "user")
                 return navigate("/app/user/dashboard");
         } catch (err) {

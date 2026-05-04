@@ -40,8 +40,7 @@ const DailyTransactionChart = ({ transactions = [] }) => {
     <Card title="📆 Daily Transaction Summary (Last 30 Days)" className="rounded-2xl shadow-md">
       <div className="w-full h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
+          <LineChart data={transactions}>
             <XAxis dataKey="date" />
             <YAxis />
             <Tooltip />

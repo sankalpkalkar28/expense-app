@@ -52,7 +52,8 @@ export const deleteTransaction = async (req,res) => {
 export const getTransaction = async (req,res) => {
     try{
         const {id} = req.user;
-        const transactions = await TransactionModel.find({userId:id});
+        const transactions = await TransactionModel
+        .find({userId:id}).sort({createdAt:-1});
         res.json(transactions);
     }catch(err){
         res.status(500).json({
