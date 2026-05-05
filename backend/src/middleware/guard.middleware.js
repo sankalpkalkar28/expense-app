@@ -60,6 +60,19 @@ export const AdminUserGuard = async (req,res,next) => {
     next();
 }
 
+export const AdminGuard = async (req,res,next) => {
+    const {authToken} = req.cookies;
+    if(!authToken)
+        return invalid(res);
+
+    const payload = jwt.verify(authToken, process.env.AUTH_SECRET);
+    if(payload.role !== "admin")
+        return invalid(res);
+
+    req.user = payload;
+    next();
+}
+
 // import jwt from "jsonwebtoken";
 
 // export const verifyTokenGuard = async (req, res, next) => {

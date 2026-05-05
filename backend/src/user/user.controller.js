@@ -5,6 +5,7 @@ import { sendMail } from "../utils/mail.js";
 import { otpTemplate } from "../utils/otp.template.js";
 import { generateOTP } from "../utils/generate.otp.js";
 import { forgotPasswordTemplate } from "../utils/forgot-template.js";
+import TransactionModel from "../transaction/transaction.model.js";
 
 export const createUser = async (req, res) => {
     try {
@@ -92,6 +93,8 @@ export const login = async (req, res) => {
         const user = await UserModel.findOne({email});
         if(!user) 
             return res.status(404).json({message: "User not found !"});
+        if(!user.status) 
+            return res.status(404).json({message: "You are not active member !"});
         const isLoged = await bcrypt.compare(password,user.password);
         if(!isLoged)
             return res.status(401).json({message: "Incorrect Password !"});
@@ -202,4 +205,42 @@ export const changePassword = async (req, res) => {
     }
 };
 
+export const getAllUsers = async (req,res) => {
+    try{
+        const {page,limit} = req.query;
+        const skip = (page-1) * limit;
+        const users = await UserModel
+        .find().sort({createdAt:-1})
+        .skip(skip)
+        .limit(limit);
+        const total = await UserModel.countDocuments()
+        res.json({
+            data : users,
+            total
+        });
+    }catch(err){
+        res.status(500).json({
+            message : err.message || "Internal server error.",
+        })
+    }
+}
+
+
+export const updateStatus = async (req,res) => {
+    try{
+        const {status} = req.body;
+        const {id} = req.params;
+        const user = await UserModel.findByIdAndUpdate(id,{status},{new:true});
+        if(!user)
+            return res.status(404).json({
+                message : "User not found !",
+                user
+            });
+        res.json(user)
+    }catch(err){
+        res.status(500).json({
+            message : err.message || "Internal server error.",
+        })
+    }
+}
 

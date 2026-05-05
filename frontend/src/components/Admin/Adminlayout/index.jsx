@@ -1,4 +1,4 @@
-import { AppstoreAddOutlined, BarChartOutlined, DollarOutlined, LogoutOutlined, MenuOutlined } from "@ant-design/icons";
+import { AppstoreAddOutlined, BarChartOutlined, DollarOutlined, LogoutOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Image, Layout, Menu, theme } from "antd";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -22,9 +22,9 @@ const items = [
         icon : <BarChartOutlined />
     },
     {
-        key : "/app/admin/transactions",
-        label : "Transactions",
-        icon : <DollarOutlined />
+        key : "/app/admin/users",
+        label : "Users",
+        icon : <UserOutlined />
     },
 ]
 

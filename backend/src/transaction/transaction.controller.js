@@ -52,9 +52,18 @@ export const deleteTransaction = async (req,res) => {
 export const getTransaction = async (req,res) => {
     try{
         const {id} = req.user;
+        const {page,limit} = req.query;
+        const skip = (page-1) * limit;
         const transactions = await TransactionModel
-        .find({userId:id}).sort({createdAt:-1});
-        res.json(transactions);
+        .find({userId:id})
+        .sort({createdAt:-1})
+        .skip(skip)
+        .limit(limit);
+        const total = await TransactionModel.countDocuments({userId:id})
+        res.json({
+            data : transactions,
+            total
+        });
     }catch(err){
         res.status(500).json({
             message : err.message || "Internal server error.",

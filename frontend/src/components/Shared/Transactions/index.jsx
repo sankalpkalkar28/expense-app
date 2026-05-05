@@ -12,7 +12,14 @@ const Transactions = () => {
     const [transactionForm] = Form.useForm();
     const [edit, setEdit] = useState(null);
     const [modal, setModal] = useState(false);
-    const [loading, setLoading] = useState(false);    
+    const [loading, setLoading] = useState(false);
+    const [transactions, setTransactions] = useState([]);
+    const [no, setNo] = useState(0);
+    const [pagination, setPagination] = useState({
+        current : 1,
+        pageSize : 2,
+        total : 0
+    });    
 
     const columns = [
         {
@@ -86,17 +93,43 @@ const Transactions = () => {
         },
     ];
 
-    const {data:transactions,error,isLoading} = useSWR(
-        "/api/transaction/get",
-        fetcher
-    );
+    // const {data:transactions,error,isLoading} = useSWR(
+    //     "/api/transaction/get",
+    //     fetcher
+    // );
+
+    const fetchTransactions = async (page = 1,pageSize=5) => {
+        try{
+            setLoading(true);
+            const res = await http.get(
+                `/api/transaction/get?page=${page}&limit=${pageSize}`
+            );
+            const {data,total} = res.data;
+            setTransactions(data);
+            setPagination({
+                current : page,
+                pageSize : pageSize,
+                total : total
+            })
+        }catch(err){
+            toast.error("Failed to fetch transactions");
+        }finally{
+            setLoading(false);
+        }
+    }
+
+    useEffect(()=> {
+        fetchTransactions(
+            pagination.current,
+            pagination.pageSize);
+    },[no])
 
     const onFinish = async (values) => {
         try{
             setLoading(true);
             await http.post("/api/transaction/create",values);
             toast.success("Transaction created successfully !");
-            mutate("/api/transaction/get");
+            setNo(no+1);
             setModal(false);
             transactionForm.resetFields();
         }catch(err){
@@ -111,7 +144,7 @@ const Transactions = () => {
             setLoading(true);
             await http.put(`/api/transaction/update/${edit._id}`,values);
             toast.success("Transaction created successfully !");
-            mutate("/api/transaction/get");
+            setNo(no+1);
             setModal(false);
             setEdit(null);
             transactionForm.resetFields();
@@ -127,7 +160,7 @@ const Transactions = () => {
             setLoading(true);
             await http.delete(`/api/transaction/delete/${id}`);
             toast.success("Transaction deleted successfully !");
-            mutate("/api/transaction/get");
+            setNo(no+1);
         }catch(err){
             toast.error(err?.response?.data?.message || err.message);
         }finally{
@@ -140,6 +173,13 @@ const Transactions = () => {
         transactionForm.setFieldsValue(obj);
         setModal(true);
     }
+
+    const handleTableChange = (pagination) => {
+        fetchTransactions(
+            pagination.current, 
+            pagination.pageSize
+        );
+    };
 
     return (
         <div>
@@ -167,7 +207,10 @@ const Transactions = () => {
                         columns={columns}
                         dataSource={transactions}
                         scroll={{ x: "max-content" }}
-                        loading={isLoading}
+                        loading={loading}
+                        rowKey="_id"
+                        pagination={pagination}
+                        onChange={handleTableChange}
                     />
                 </Card>
             </div>

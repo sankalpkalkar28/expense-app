@@ -14,8 +14,7 @@ const Homepage = lazy (() => import("./components/Home"));
 const Dashboard = lazy(() => import("./components/Shared/Dashboard"));
 const Report = lazy(() => import("./components/Shared/Report"));
 const Transactions = lazy(() => import('./components/Shared/Transactions'));
-
-
+const Users = lazy(() => import('./components/Shared/Users'));
 
 const App = () => {
   return (
@@ -37,7 +36,7 @@ const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="report" element={<Report />} />
-          <Route path="transactions" element={<Transactions />} />
+          <Route path="users" element={<Users />} />
         </Route>
         {/* user related routes*/}
         <Route path="/app/user"
