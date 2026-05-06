@@ -32,6 +32,9 @@ app.use(express.urlencoded({extended:false}));
 import userRouter from "./user/user.routes.js";
 import TransactionRouter from "./transaction/transaction.route.js";
 import DashboardRouter from "./dashboard/dashboard.route.js";
+import adminRouter from "./admin/admin.routes.js";
+
 app.use("/api/user",userRouter);
 app.use("/api/transaction",TransactionRouter);
 app.use("/api/dashboard",DashboardRouter);
+app.use("/api/admin", adminRouter);

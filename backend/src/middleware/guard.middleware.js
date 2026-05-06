@@ -33,20 +33,6 @@ const invalid = async (res) => {
         res.status(400).json({message: 'Bad Request'})
 }
 
-// export const AdminUserGuard = async (req, res, next) => {
-//     const { authToken } = req.cookies;
-//     if(!authToken)
-//         return invalid(res);
-
-//     const payload = await jwt.verify(authToken, process.env.AUTH_SECRET);
-
-//     if(payload.role !== "user" && payload.role !== "admin")
-//         return invalid(res);
-
-//     req.user = payload;
-//     next();
-// };
-
 export const AdminUserGuard = async (req,res,next) => {
     const {authToken} = req.cookies;
     if(!authToken)
