@@ -112,7 +112,7 @@ const ForgotPassword = () => {
             <div className="flex">
                 <div className="w-1/2 hidden md:flex items-center justify-center">
                     <img
-                        src="/statistic-report.webp"
+                        src="/exp-img.jpg"
                         alt="Bank"
                         className="w-4/5 object-contain"
                     />

@@ -26,7 +26,7 @@ const Users = () => {
             className: "capitalize"
         },
         {
-            title: "FUllname",
+            title: "Fullname",
             dataIndex: "fullname",
             key: "fullname",
             className: "capitalize"
@@ -131,7 +131,7 @@ const Users = () => {
         <div>
             <div className="grid">
                 <Card
-                    title="Transaction List"
+                    title="Users List"
                     style={{ overflowX: "auto" }}
                     extra={
                         <div className="mt-2 md:mt-0 flex flex-col md:flex-row gap-3">

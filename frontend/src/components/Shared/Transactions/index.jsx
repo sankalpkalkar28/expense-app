@@ -17,7 +17,7 @@ const Transactions = () => {
     const [no, setNo] = useState(0);
     const [pagination, setPagination] = useState({
         current : 1,
-        pageSize : 2,
+        pageSize : 5,
         total : 0
     });    
 

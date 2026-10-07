@@ -72,6 +72,7 @@ import Loader from './components/Shared/Loader';
 const Adminlayout = lazy(() => import("./components/Admin/Adminlayout"));
 const PageNotFound = lazy(() => import("./components/PageNotFound"));
 const Signup = lazy(() => import("./components/Home/Signup"));
+const Login = lazy(() => import("./components/Home/Login")); // adjust path if needed
 const Userlayout = lazy(() => import("./components/User/Userlayout"));
 const ForgotPassword = lazy(() => import("./components/Home/ForgotPassword"));
 const Homepage = lazy(() => import("./components/Home"));
@@ -88,6 +89,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           
           {/* Admin related routes */}

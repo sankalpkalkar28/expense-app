@@ -117,7 +117,7 @@ const Dashboard = () => {
                         <Divider type="vertical" className="h-24" />
                         <div>
                             <h1 className="text-3xl font-bold text-indigo-400">
-                                -{summary.balance} ₹
+                                {summary.balance} ₹
                             </h1>
                             <p className="text-lg mt-1 text-zinc-400">
                                 {summary.balanceEstimate} Estimate

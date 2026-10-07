@@ -3,11 +3,44 @@ import http from "../../../utils/http";
 import Loader from "../../Shared/Loader";
 import { Card, Button, Empty } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
+import { DatePicker } from 'antd';
+
+const { RangePicker } = DatePicker;
 
 const Report = () => {
   const [report, setReport] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState(null);
+
+  // const loadData = useCallback(async () => {
+  //   setLoading(true);
+  //   try {
+  //     const reportRes = await http.get("api/dashboard/report");
+  //     setReport(reportRes.data);
+
+  //     // Fetch user's transactions
+  //     const transRes = await http.get("/api/transaction/get?page=1&limit=10");
+
+  //     console.log("SERVER CHECK:", transRes.data);
+
+  //     // Extract array from response
+  //     let list = [];
+  //     if (transRes.data && Array.isArray(transRes.data.data)) {
+  //       list = transRes.data.data;
+  //     } else if (Array.isArray(transRes.data)) {
+  //       list = transRes.data;
+  //     }
+
+  //     setTransactions(list);
+
+  //   } catch (error) {
+  //     console.error("Fetch Error:", error);
+  //     setTransactions([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -15,19 +48,25 @@ const Report = () => {
       const reportRes = await http.get("api/dashboard/report");
       setReport(reportRes.data);
 
-      // Fetch user's transactions
-      const transRes = await http.get("/api/transaction/get?page=1&limit=10");
-      
+      // Build URL with date filter
+      let url = "/api/transaction/get?page=1&limit=10";
+      if (dateRange && dateRange[0] && dateRange[1]) {
+        const startDate = dateRange[0].format('YYYY-MM-DD');
+        const endDate = dateRange[1].format('YYYY-MM-DD');
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+      }
+
+      const transRes = await http.get(url);
+
       console.log("SERVER CHECK:", transRes.data);
 
-      // Extract array from response
       let list = [];
       if (transRes.data && Array.isArray(transRes.data.data)) {
         list = transRes.data.data;
       } else if (Array.isArray(transRes.data)) {
         list = transRes.data;
       }
-      
+
       setTransactions(list);
 
     } catch (error) {
@@ -36,7 +75,7 @@ const Report = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dateRange]); // ← Added dateRange here
 
   useEffect(() => {
     loadData();
@@ -45,23 +84,26 @@ const Report = () => {
   if (loading && !report) return <Loader />;
 
   const summary = report?.summary || { totalCredit: 0, totalDebit: 0, balance: 0 };
-  
+
   // Calculate totals from transactions if report doesn't have proper data
   const calculatedCredit = transactions.filter(t => t.transactionType === "cr").reduce((sum, t) => sum + (t.amount || 0), 0);
   const calculatedDebit = transactions.filter(t => t.transactionType === "dr").reduce((sum, t) => sum + (t.amount || 0), 0);
-  
+
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
         <h1 className="text-3xl font-bold text-gray-700">My Financial Report</h1>
-        <Button 
-          icon={<ReloadOutlined />} 
-          onClick={loadData} 
-          type="primary"
-          ghost
-        >
-          Refresh Data
-        </Button>
+        <div className="flex gap-4">
+          <RangePicker onChange={setDateRange} />
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={loadData}
+            type="primary"
+            ghost
+          >
+            Refresh Data
+          </Button>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
