@@ -1,44 +1,53 @@
 import TransactionModel from "../transaction/transaction.model.js";
 import UserModel from "../user/user.model.js";
 
-// Get all users (for admin dropdown)
+console.log("🚀 FRESH FILE - DEC 2024");
+
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await UserModel.find({}, 'name email _id role');
+        const users = await UserModel.find({}, 'name email _id');
         res.json(users);
     } catch (err) {
-        res.status(500).json({
-            message: err.message || "Failed to fetch users"
-        });
+        res.status(500).json({ message: err.message });
     }
 }
 
-// Get team summary
 export const getTeamSummary = async (req, res) => {
     try {
         const totalUsers = await UserModel.countDocuments();
-        
-        // Get all transactions
         const allTransactions = await TransactionModel.find();
         
-        // Calculate total spending
-        const total = allTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
-        
-        // Find top spender
-        const userSpending = {};
-        for (const transaction of allTransactions) {
-            const userId = transaction.userId.toString();
-            userSpending[userId] = (userSpending[userId] || 0) + transaction.amount;
+        let total = 0;
+        for (let t of allTransactions) {
+            total = total + (t.amount || 0);
         }
         
-        let topSpenderName = "No data";
-        let maxSpent = 0;
+        const allUsers = await UserModel.find();
         
-        for (const [userId, spent] of Object.entries(userSpending)) {
-            if (spent > maxSpent) {
-                maxSpent = spent;
-                const user = await UserModel.findById(userId);
-                topSpenderName = user ? user.name : "Unknown";
+        const userSpendingMap = {};
+        for (let user of allUsers) {
+            const userId = user._id.toString();
+            const userName = user.fullname || user.name || user.username || "Unknown";
+            userSpendingMap[userId] = {
+                name: userName,
+                total: 0
+            };
+        }
+        
+        for (let t of allTransactions) {
+            const userId = t.userId.toString();
+            if (userSpendingMap[userId]) {
+                userSpendingMap[userId].total += (t.amount || 0);
+            }
+        }
+        
+        let topSpenderName = "No transactions";
+        let maxAmount = 0;
+        
+        for (let userId in userSpendingMap) {
+            if (userSpendingMap[userId].total > maxAmount) {
+                maxAmount = userSpendingMap[userId].total;
+                topSpenderName = userSpendingMap[userId].name;
             }
         }
         
@@ -47,30 +56,24 @@ export const getTeamSummary = async (req, res) => {
             topSpender: topSpenderName,
             totalUsers: totalUsers
         });
+        
     } catch (err) {
-        res.status(500).json({
-            message: err.message || "Failed to fetch team summary"
-        });
+        console.error("Error:", err);
+        res.status(500).json({ message: err.message });
     }
-}
+};
 
-// Get specific user's transactions
 export const getUserTransactions = async (req, res) => {
     try {
         const { userId } = req.params;
-        
         const transactions = await TransactionModel
             .find({ userId: userId })
             .sort({ createdAt: -1 })
             .limit(50);
             
-        res.json({
-            transactions: transactions
-        });
+        res.json({ transactions: transactions });
     } catch (err) {
-        res.status(500).json({
-            message: err.message || "Failed to fetch user transactions"
-        });
+        res.status(500).json({ message: err.message });
     }
 }
 

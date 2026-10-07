@@ -34,25 +34,28 @@ export const createUser = async (req, res) => {
 }
 
 // export const createUser = async (req, res) => {
-//     try{
+//     try {
 //         const { fullname, email, password, mobile } = req.body;
 
-//         const hashedPassword = await bcrypt.hash(password,10);
+//         // 1. Check if user already exists
+//         const isEmail = await UserModel.findOne({ email });
+//         if (isEmail) return res.status(400).json({ message: "Already registered!" });
 
+//         // 2. Create user — password will be hashed automatically by pre-save hook
 //         const user = new UserModel({
 //             fullname,
 //             email,
-//             password: hashedPassword,
+//             password,   // plain password — hook handles hashing
 //             mobile
 //         });
 
 //         await user.save();
-
-//         res.json(user);
-//     }catch(err){
-//         res.status(500).json({message : err.message});
+//         res.json({ message: "Signup success!", success: true });
+//     } catch (err) {
+//         console.error("SIGNUP ERROR:", err);
+//         res.status(500).json({ message: err.message });
 //     }
-// }
+// };
 
 export const sendEmail = async (req, res) => {
     try {

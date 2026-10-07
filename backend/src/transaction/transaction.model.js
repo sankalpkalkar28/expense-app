@@ -30,6 +30,11 @@ const TransactionSchema = new Schema({
         type: String,
         lowercase: true,
         trim: true
+    },
+    category: {  // ← MOVE THIS INSIDE
+        type: String,
+        enum: ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Health', 'Other'],
+        default: 'Other'
     }
 }, {timestamps:true});
 

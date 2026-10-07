@@ -10,12 +10,21 @@ dotenv.config();
 const app = express();
 
 // database connection
+// mongoose.connect(process.env.DB_URL)
+// .then(()=>{
+//     console.log("Database connected !");
+//     app.listen(3030,()=>console.log("Server is running on port 3030"));
+// })
+// .catch(()=>console.log("Database not connected"));
+
+const PORT = process.env.PORT || 3030;
+
 mongoose.connect(process.env.DB_URL)
-.then(()=>{
-    console.log("Database connected !");
-    app.listen(3030,()=>console.log("Server is running on port 3030"));
-})
-.catch(()=>console.log("Database not connected"));
+  .then(() => {
+    console.log("Database connected!");
+    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+  })
+  .catch((error) => console.log("Database not connected", error));
 
 app.use(cookieParser());
 app.use(cors({

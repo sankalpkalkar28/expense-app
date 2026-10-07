@@ -21,23 +21,25 @@ const userSchema = new Schema({
     },
     status: {
         type: Boolean,
-        default: false
+        default: false,
+        description: "User account status"
     },
     role: {
         type: String,
         default: "user",
-        enum: ["user"]
-    }
+        enum: ["user","admin"],
+        description: "User permissions level"
+    },
+    mobile: {
+       type: String,
+       required: true,
+       trim: true
+   }
 },{ timestamps:true });
 
-/* HASH PASSWORD */
-// userSchema.pre("save", async function () {
-//     if(!this.isModified("password")) return;
-//     this.password = await bcrypt.hash(this.password,12);
-// });
-// userSchema.pre('save', async function (next) {
-//     const hashedPass = await bcrypt.hash(this.password.toString(),12);
-//     this.password = hashedPass;
+// userSchema.pre('save', async function(next) {
+//     if (!this.isModified('password')) return next();
+//     this.password = await bcrypt.hash(this.password, 10);
 //     next();
 // });
 

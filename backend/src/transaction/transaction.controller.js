@@ -49,17 +49,53 @@ export const deleteTransaction = async (req,res) => {
     }
 }
 
+// export const getTransaction = async (req,res) => {
+//     try{
+//         const {id} = req.user;
+//         const {page,limit} = req.query;
+//         const skip = (page-1) * limit;
+//         const transactions = await TransactionModel
+//         .find({userId:id})
+//         .sort({createdAt:-1})
+//         .skip(skip)
+//         .limit(limit);
+//         const total = await TransactionModel.countDocuments({userId:id})
+//         res.json({
+//             data : transactions,
+//             total
+//         });
+//     }catch(err){
+//         res.status(500).json({
+//             message : err.message || "Internal server error.",
+//         })
+//     }
+// }
+
 export const getTransaction = async (req,res) => {
     try{
         const {id} = req.user;
-        const {page,limit} = req.query;
+        const {page, limit, startDate, endDate} = req.query;
         const skip = (page-1) * limit;
+        
+        // Build filter
+        let filter = { userId: id };
+        
+        // Add date filter if provided
+        if (startDate && endDate) {
+            filter.createdAt = {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate + 'T23:59:59')
+            };
+        }
+        
         const transactions = await TransactionModel
-        .find({userId:id})
+        .find(filter)
         .sort({createdAt:-1})
         .skip(skip)
         .limit(limit);
-        const total = await TransactionModel.countDocuments({userId:id})
+        
+        const total = await TransactionModel.countDocuments(filter)
+        
         res.json({
             data : transactions,
             total
