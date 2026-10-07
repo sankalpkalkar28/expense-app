@@ -27,9 +27,25 @@ mongoose.connect(process.env.DB_URL)
   .catch((error) => console.log("Database not connected", error));
 
 app.use(cookieParser());
+// app.use(cors({
+//     origin : process.env.DOMAIN,
+//     credentials : true,
+// }));
+
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://expense-app-bay-eight.vercel.app"
+];
+
 app.use(cors({
-    origin : process.env.DOMAIN,
-    credentials : true,
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true
 }));
 
 // app level middleware
